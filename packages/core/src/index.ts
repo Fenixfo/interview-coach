@@ -2,3 +2,6 @@ export * from "./providers";
 export * from "./errors";
 export * from "./question-detector";
 export * from "./turn-segmenter";
+export * from "./profile";
+export * from "./prompts";
+export * from "./gemini";
