@@ -1,0 +1,14 @@
+node_modules/
+dist/
+out/
+release/
+*.log
+.env
+.env.*
+!.env.example
+*.key
+.DS_Store
+# Modelos de Whisper (se descargan localmente)
+models/
+*.bin
+*.gguf
