@@ -13,3 +13,4 @@ models/
 *.bin
 *.gguf
 apps/desktop/spike/sample.wav
+apps/desktop/.impeccable/review/

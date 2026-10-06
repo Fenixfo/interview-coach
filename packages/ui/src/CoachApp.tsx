@@ -100,16 +100,32 @@ function Toolbar(props: {
   const model = c.modelStatus;
   return (
     <header className="bar">
-      <div className="bar__status" role="status" aria-live="polite">
-        <span className="dot" data-on={c.running && !c.myTurn} aria-hidden />
-        <span>
-          {model.state === "downloading"
-            ? `Descargando el modelo de voz local… ${Math.round(model.percent)} %`
-            : STATUS_TEXT[c.status]}
-        </span>
+      <div className="bar__status" role={c.error ? "alert" : "status"} aria-live="polite">
+        {c.error ? (
+          <>
+            <span className="status__error">{c.error.message}</span>
+            {c.error.kind === "invalid_key" && (
+              <button type="button" className="btn btn--sm" onClick={props.onSettings}>
+                Abrir Ajustes
+              </button>
+            )}
+            <button type="button" className="btn btn--sm btn--quiet" onClick={c.dismissError}>
+              Cerrar
+            </button>
+          </>
+        ) : (
+          <>
+            <span className="dot" data-on={c.running && !c.myTurn} aria-hidden />
+            <span>
+              {model.state === "downloading"
+                ? `Descargando el modelo de voz local… ${Math.round(model.percent)} %`
+                : STATUS_TEXT[c.status]}
+            </span>
+          </>
+        )}
       </div>
 
-      <div className="bar__group">
+      <div className="bar__group bar__main">
         <select
           className="select only-wide"
           aria-label="Fuente de audio"
@@ -160,9 +176,13 @@ function Toolbar(props: {
           <Reply size={18} aria-hidden /> <span className="label">Responder última</span>
         </button>
 
+      </div>
+
+      <div className="bar__group bar__aux">
         <button
           type="button"
           className="btn"
+          title="Limpiar la sesión"
           onClick={c.clear}
           disabled={c.turns.length === 0 && c.lines.length === 0}
           aria-label="Limpiar"
@@ -176,6 +196,7 @@ function Toolbar(props: {
           aria-pressed={props.transcriptOpen}
           onClick={props.onToggleTranscript}
           aria-label="Transcripción"
+          title="Mostrar u ocultar la transcripción"
         >
           <Captions size={18} aria-hidden /> <span className="label">Transcripción</span>
         </button>
@@ -198,6 +219,7 @@ function Toolbar(props: {
           className="btn btn--quiet"
           onClick={props.onSettings}
           aria-label="Ajustes"
+          title="Ajustes"
         >
           <SettingsIcon size={18} aria-hidden /> <span className="label">Ajustes</span>
         </button>
@@ -264,20 +286,6 @@ function FocusPanel({ coach: c, onSettings }: { coach: Coach; onSettings: () => 
 
   return (
     <section className="focus" aria-label="Pregunta y respuesta sugerida">
-      {c.error && (
-        <div className="alert" role="alert">
-          <p>{c.error.message}</p>
-          {c.error.kind === "invalid_key" && (
-            <button type="button" className="btn" onClick={onSettings}>
-              Abrir Ajustes
-            </button>
-          )}
-          <button type="button" className="btn btn--quiet" onClick={c.dismissError}>
-            Cerrar
-          </button>
-        </div>
-      )}
-
       {!turn ? (
         <div className="empty">
           <p>
@@ -296,10 +304,20 @@ function FocusPanel({ coach: c, onSettings }: { coach: Coach; onSettings: () => 
         </div>
       ) : (
         <>
-          <article className="ficha" aria-label={`Pregunta ${pad(turn.n)}`}>
-            <div className="ficha__head">
-              <p className="ficha__no">P-{pad(turn.n)}</p>
-              <div className="ficha__nav">
+          <article className="ficha" aria-label={`Pregunta P-${pad(turn.n)}`}>
+            <p className="ficha__no" aria-hidden>
+              <span className="ficha__p">P-</span>
+              {pad(turn.n)}
+            </p>
+            <div className="ficha__body">
+              <p className="ficha__en" lang="en">
+                {turn.en}
+              </p>
+              <p className="ficha__es" lang="es">
+                {turn.es || "…"}
+              </p>
+            </div>
+            <div className="ficha__nav">
                 <button
                   type="button"
                   className="icon-btn"
@@ -318,25 +336,18 @@ function FocusPanel({ coach: c, onSettings }: { coach: Coach; onSettings: () => 
                 >
                   <ChevronRight size={18} aria-hidden />
                 </button>
-              </div>
             </div>
-            <p className="ficha__en" lang="en">
-              {turn.en}
-            </p>
-            <p className="ficha__es" lang="es">
-              {turn.es || "…"}
-            </p>
           </article>
 
           <section className="answer" aria-label="Respuesta sugerida">
-            <h2 className="answer__head">
-              Respuesta sugerida
-              {turn.answer && <span className="answer__meta">{wordCount(turn.answer)} palabras</span>}
-            </h2>
+            <h2 className="sr-only">Respuesta sugerida</h2>
             {turn.answer ? (
               <p className="answer__text" lang="en" aria-live="off">
                 {withGaps(turn.answer)}
               </p>
+            ) : null}
+            {turn.answer ? (
+              <p className="answer__meta">{wordCount(turn.answer)} palabras</p>
             ) : turn.answering ? (
               <p className="hint">Preparando la respuesta…</p>
             ) : c.error && c.error.kind !== "audio" && c.error.kind !== "stt" ? (

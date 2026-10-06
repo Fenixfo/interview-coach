@@ -82,7 +82,7 @@ function createWindow(): void {
     height: 760,
     minWidth: 360,
     minHeight: 420,
-    backgroundColor: "#14211b",
+    backgroundColor: "#0f261b",
     title: "Coach de entrevistas",
     autoHideMenuBar: true,
     webPreferences: {
