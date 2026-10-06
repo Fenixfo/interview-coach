@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PROFILE_FIELDS, type EnglishLevel } from "@interview-coach/core";
+import { PROFILE_FIELDS, type AudioSourceKind, type EnglishLevel } from "@interview-coach/core";
 import type { Coach } from "./useCoach";
 
 const LEVELS: EnglishLevel[] = ["A2", "B1", "B2", "C1"];
@@ -53,6 +53,26 @@ export function SettingsView({ coach: c }: { coach: Coach }) {
             <span className="field__hint">
               Cada persona usa su propia clave gratuita, creada en Google AI Studio. Se cifra con el sistema
               operativo y nunca sale de este equipo salvo hacia Google.
+            </span>
+          </div>
+        </section>
+
+        <section aria-labelledby="h-audio">
+          <h3 id="h-audio">Audio</h3>
+          <div className="field">
+            <label htmlFor="source">Fuente de audio</label>
+            <select
+              id="source"
+              className="select"
+              value={c.settings.audioSource}
+              disabled={c.running}
+              onChange={(e) => c.setSettings({ ...c.settings, audioSource: e.target.value as AudioSourceKind })}
+            >
+              <option value="system">Audio del sistema (YouTube, Zoom, Meet, Teams)</option>
+              <option value="microphone">Micrófono</option>
+            </select>
+            <span className="field__hint">
+              {c.running ? "Pausa la sesión para cambiarla." : "El audio del sistema es lo que oyes por tus altavoces o audífonos."}
             </span>
           </div>
         </section>

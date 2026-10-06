@@ -486,14 +486,17 @@ input[type="range"] {
 }
 @container app (max-width: 759px) {
   .body {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
   }
   .live {
     display: none;
+    flex: 0 1 40%;
     border-right: 0;
     border-bottom: 1px solid var(--seam);
-    max-height: 40%;
+  }
+  .focus {
+    flex: 1 1 0;
   }
   .app[data-transcript="open"] .live {
     display: grid;

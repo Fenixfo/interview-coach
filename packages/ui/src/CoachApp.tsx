@@ -111,7 +111,7 @@ function Toolbar(props: {
 
       <div className="bar__group">
         <select
-          className="select"
+          className="select only-wide"
           aria-label="Fuente de audio"
           value={c.settings.audioSource}
           disabled={c.running}
@@ -339,6 +339,10 @@ function FocusPanel({ coach: c, onSettings }: { coach: Coach; onSettings: () => 
               </p>
             ) : turn.answering ? (
               <p className="hint">Preparando la respuesta…</p>
+            ) : c.error && c.error.kind !== "audio" && c.error.kind !== "stt" ? (
+              <p className="hint">
+                No se pudo generar la respuesta. Cuando se resuelva, usa Responder última para reintentar.
+              </p>
             ) : c.hasKey ? (
               <p className="hint">
                 Esto no parece una pregunta. Si lo es, usa Responder última para generar la respuesta.

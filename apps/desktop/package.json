@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "spike": "electron spike/main.cjs",
     "bench": "node spike/bench.mjs",
-    "model": "node spike/download-model.mjs"
+    "model": "node spike/download-model.mjs",
+    "demo": "vite --config vite.demo.config.mjs"
   },
   "dependencies": {
     "@fontsource-variable/public-sans": "^5.3.0",
