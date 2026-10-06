@@ -12,3 +12,4 @@ release/
 models/
 *.bin
 *.gguf
+apps/desktop/spike/sample.wav
