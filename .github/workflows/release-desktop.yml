@@ -1,0 +1,27 @@
+name: Publicar instalador de escritorio
+
+# Se ejecuta al subir una etiqueta, por ejemplo: git tag v0.1.0 && git push origin v0.1.0
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Compilar, empaquetar y publicar en GitHub Releases
+        run: pnpm --filter @interview-coach/desktop release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,6 @@
 {
   "name": "@interview-coach/desktop",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "electron-vite dev",
@@ -10,15 +10,12 @@
     "spike": "electron spike/main.cjs",
     "bench": "node spike/bench.mjs",
     "model": "node spike/download-model.mjs",
-    "demo": "vite --config vite.demo.config.mjs"
+    "demo": "vite --config vite.demo.config.mjs",
+    "dist": "electron-vite build && electron-builder --win nsis --publish never",
+    "release": "electron-vite build && electron-builder --win nsis --publish always"
   },
   "dependencies": {
-    "@fontsource-variable/public-sans": "^5.3.0",
-    "@interview-coach/core": "workspace:*",
-    "@interview-coach/ui": "workspace:*",
-    "@kutalia/whisper-node-addon": "^1.1.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "@kutalia/whisper-node-addon": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
@@ -26,9 +23,18 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
     "typescript": "^7.0.2",
-    "vite": "^8.3.2"
+    "vite": "^8.3.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "@interview-coach/core": "workspace:*",
+    "@interview-coach/ui": "workspace:*",
+    "@fontsource-variable/public-sans": "^5.3.0"
   },
-  "main": "out/main/index.js"
+  "main": "out/main/index.js",
+  "productName": "Coach de entrevistas",
+  "description": "Practica entrevistas de trabajo en inglés",
+  "author": "Jair Ayala"
 }
