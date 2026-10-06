@@ -105,8 +105,20 @@ textarea {
 }
 
 .status__error {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: var(--clay);
-  text-wrap: balance;
+}
+.bar__status:has(.status__error) {
+  flex-wrap: nowrap;
+}
+.bar__status .btn--sm {
+  border-color: var(--clay);
+  color: var(--clay);
+  flex: none;
 }
 
 .btn--sm {
@@ -239,7 +251,7 @@ textarea {
 }
 
 .live__empty {
-  grid-column: 1 / -1;
+  grid-column: 1;
   margin: 0;
   padding: 2rem var(--pad);
   color: var(--ink-3);
@@ -257,7 +269,8 @@ textarea {
 .ficha {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  grid-template-areas: "no body" "no nav";
+  grid-template-areas: "no body" "nav body";
+  align-content: start;
   column-gap: 1.25rem;
   margin: var(--pad);
   padding: 1.5rem 1.5rem 0.75rem;
@@ -276,11 +289,6 @@ textarea {
   color: var(--brass);
 }
 .ficha__p {
-  margin-right: 0.15em;
-  font-size: 1.125rem;
-  font-weight: 500;
-  letter-spacing: 0;
-  vertical-align: top;
   color: var(--ink-3);
 }
 .ficha__body {
@@ -289,10 +297,10 @@ textarea {
 }
 .ficha__nav {
   grid-area: nav;
-  justify-self: end;
+  justify-self: start;
   display: flex;
   gap: 0.25rem;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 }
 .ficha__en {
   margin: 0;
@@ -542,9 +550,6 @@ input[type="range"] {
   }
   .ficha__no {
     font-size: 2.25rem;
-  }
-  .ficha__p {
-    font-size: 0.875rem;
   }
   .ficha__en {
     font-size: 1.125rem;

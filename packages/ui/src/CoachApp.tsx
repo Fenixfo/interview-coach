@@ -103,13 +103,15 @@ function Toolbar(props: {
       <div className="bar__status" role={c.error ? "alert" : "status"} aria-live="polite">
         {c.error ? (
           <>
-            <span className="status__error">{c.error.message}</span>
+            <span className="status__error" title={c.error.message}>
+              {c.error.message}
+            </span>
             {c.error.kind === "invalid_key" && (
               <button type="button" className="btn btn--sm" onClick={props.onSettings}>
                 Abrir Ajustes
               </button>
             )}
-            <button type="button" className="btn btn--sm btn--quiet" onClick={c.dismissError}>
+            <button type="button" className="btn btn--sm" onClick={c.dismissError}>
               Cerrar
             </button>
           </>
@@ -352,7 +354,7 @@ function FocusPanel({ coach: c, onSettings }: { coach: Coach; onSettings: () => 
               <p className="hint">Preparando la respuesta…</p>
             ) : c.error && c.error.kind !== "audio" && c.error.kind !== "stt" ? (
               <p className="hint">
-                No se pudo generar la respuesta. Cuando se resuelva, usa Responder última para reintentar.
+                {c.error.message} Cuando se resuelva, usa Responder última para reintentar.
               </p>
             ) : c.hasKey ? (
               <p className="hint">
