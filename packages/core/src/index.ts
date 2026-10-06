@@ -5,3 +5,4 @@ export * from "./turn-segmenter";
 export * from "./profile";
 export * from "./prompts";
 export * from "./gemini";
+export * from "./rolling-transcriber";
