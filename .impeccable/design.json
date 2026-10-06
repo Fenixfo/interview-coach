@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-06T00:00:00Z",
+  "title": "Design System: Interview Coach",
+  "extensions": {
+    "colorMeta": {
+      "wall": { "role": "neutral", "displayName": "Ink Green Wall", "canonical": "#0f261b", "tonalRamp": ["#050e0a", "#0a1a12", "#0f261b", "#143024", "#1c3f2e", "#305040", "#587566", "#9bab9f"] },
+      "wall-raised": { "role": "neutral", "displayName": "Raised Wall", "canonical": "#143024", "tonalRamp": ["#050e0a", "#0a1a12", "#0f261b", "#143024", "#1c3f2e", "#305040", "#587566", "#9bab9f"] },
+      "plate": { "role": "neutral", "displayName": "Plate Green", "canonical": "#163325", "tonalRamp": ["#050e0a", "#0a1a12", "#0f261b", "#163325", "#1c3f2e", "#305040", "#587566", "#9bab9f"] },
+      "seam": { "role": "neutral", "displayName": "Seam", "canonical": "#305040", "tonalRamp": ["#0f261b", "#1c3f2e", "#254636", "#305040", "#456a56", "#5f8570", "#85a493", "#b2c9bc"] },
+      "ink": { "role": "neutral", "displayName": "Bone Ink", "canonical": "#dcd8c8", "tonalRamp": ["#4a4a42", "#6b6a5f", "#8c8a7c", "#aaa797", "#c2bfae", "#dcd8c8", "#eceadf", "#f6f5ef"] },
+      "ink-2": { "role": "neutral", "displayName": "Sage Ink", "canonical": "#b2bcae", "tonalRamp": ["#3c443a", "#566053", "#728070", "#8e9d8b", "#b2bcae", "#c6cec3", "#dae0d8", "#eef1ec"] },
+      "ink-3": { "role": "neutral", "displayName": "Quiet Sage", "canonical": "#9bab9f", "tonalRamp": ["#323c35", "#47554b", "#5f7065", "#7a8d80", "#9bab9f", "#b3c0b7", "#cad4cd", "#e1e8e3"] },
+      "brass": { "role": "primary", "displayName": "Matte Brass", "canonical": "#c9a45c", "tonalRamp": ["#3d300f", "#5e4a1a", "#806729", "#a2833f", "#c9a45c", "#d4b06b", "#e3c892", "#f2e4c4"] },
+      "brass-hover": { "role": "primary", "displayName": "Brass Hover", "canonical": "#d4b06b", "tonalRamp": ["#3d300f", "#5e4a1a", "#806729", "#a2833f", "#c9a45c", "#d4b06b", "#e3c892", "#f2e4c4"] },
+      "brass-ink": { "role": "neutral", "displayName": "Brass Ink", "canonical": "#0f261b", "tonalRamp": ["#050e0a", "#0a1a12", "#0f261b", "#143024", "#1c3f2e", "#305040", "#587566", "#9bab9f"] },
+      "focus": { "role": "primary", "displayName": "Focus Brass", "canonical": "#e0bf7c", "tonalRamp": ["#3d300f", "#5e4a1a", "#806729", "#a2833f", "#c9a45c", "#e0bf7c", "#ecd6a6", "#f6ebd0"] },
+      "clay": { "role": "secondary", "displayName": "Muted Clay", "canonical": "#e8a08a", "tonalRamp": ["#4a2218", "#6e3626", "#93503a", "#b86b52", "#d08670", "#e8a08a", "#f0bcab", "#f8dcd2"] }
+    },
+    "typographyMeta": {
+      "catalog-numeral": { "displayName": "Catalog Numeral", "purpose": "P-07 in the plate gutter; 2.25rem in compact." },
+      "answer": { "displayName": "Answer", "purpose": "Suggested answer read aloud; 2.125rem at >=1200px container, 1.75rem compact." },
+      "question-en": { "displayName": "Question EN", "purpose": "English question on the plate; 1.125rem in compact." },
+      "question-es": { "displayName": "Question ES", "purpose": "Spanish translation under the English; 0.9375rem in compact." },
+      "title": { "displayName": "Title", "purpose": "Settings headings." },
+      "transcript": { "displayName": "Transcript", "purpose": "Live English and Spanish cells." },
+      "body": { "displayName": "Body", "purpose": "Default UI text and column headers." },
+      "label": { "displayName": "Label", "purpose": "Footer privacy line, hints, small buttons." }
+    },
+    "shadows": [
+      { "name": "none", "value": "none", "purpose": "The system is flat; depth is tonal plus 1px seams. Only an inset 1.5px ring draws the idle status dot." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "120ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Button background and border colour only; disabled under reduced motion." }
+    ],
+    "breakpoints": [
+      { "name": "compact", "value": "container app max-width 759px" },
+      { "name": "wide-answer", "value": "container app min-width 1200px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Button",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Transparent control with a seam border.",
+      "html": "<button class=\"ds-btn\">Mi turno</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.25rem; padding: 0.375rem 0.875rem; background: transparent; border: 1px solid var(--seam, #305040); border-radius: 6px; color: var(--ink, #dcd8c8); font: inherit; cursor: pointer; transition: background-color 120ms cubic-bezier(0.16,1,0.3,1), border-color 120ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:hover { background: var(--wall-raised, #143024); border-color: #6f8a79; } .ds-btn:focus-visible { outline: 2px solid var(--focus, #e0bf7c); outline-offset: 2px; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Brass fill; one per bar (Iniciar / Pausar).",
+      "html": "<button class=\"ds-btn-primary\">Iniciar</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; min-height: 2.25rem; padding: 0.375rem 0.875rem; background: var(--brass, #c9a45c); border: 1px solid var(--brass, #c9a45c); border-radius: 6px; color: var(--brass-ink, #0f261b); font: 600 inherit/1.5 inherit; font-weight: 600; cursor: pointer; } .ds-btn-primary:hover { background: #d4b06b; border-color: #d4b06b; } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus, #e0bf7c); outline-offset: 2px; }"
+    },
+    {
+      "name": "Toggle Button (pressed)",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "aria-pressed state: 18% brass tint with brass border.",
+      "html": "<button class=\"ds-btn-pressed\" aria-pressed=\"true\">Mi turno</button>",
+      "css": ".ds-btn-pressed { min-height: 2.25rem; padding: 0.375rem 0.875rem; background: color-mix(in oklab, #c9a45c 18%, #0f261b); border: 1px solid #c9a45c; border-radius: 6px; color: #dcd8c8; font: inherit; cursor: pointer; } .ds-btn-pressed:focus-visible { outline: 2px solid #e0bf7c; outline-offset: 2px; }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Raised-wall input with seam border.",
+      "html": "<input class=\"ds-input\" placeholder=\"Clave de Gemini\" />",
+      "css": ".ds-input { width: 100%; padding: 0.5rem 0.625rem; background: var(--wall-raised, #143024); border: 1px solid var(--seam, #305040); border-radius: 6px; color: var(--ink, #dcd8c8); font: inherit; } .ds-input::placeholder { color: #9bab9f; } .ds-input:focus-visible { outline: 2px solid var(--focus, #e0bf7c); outline-offset: 2px; }"
+    },
+    {
+      "name": "Question Plate",
+      "kind": "card",
+      "refersTo": "ficha",
+      "description": "Signature: catalogue numeral in the gutter, English over Spanish.",
+      "html": "<article class=\"ds-ficha\"><p class=\"ds-no\"><span class=\"ds-p\">P-</span>07</p><div><p class=\"ds-en\">Tell me about a time you led a team.</p><p class=\"ds-es\">Cuéntame de una vez en que lideraste un equipo.</p></div></article>",
+      "css": ".ds-ficha { display: grid; grid-template-columns: auto minmax(0,1fr); column-gap: 1.25rem; padding: 1.5rem 1.5rem 0.75rem; background: #163325; border: 1px solid #305040; border-radius: 2px; color: #dcd8c8; font-family: 'Public Sans Variable', system-ui, sans-serif; } .ds-no { margin: 0; font-size: 3.5rem; line-height: 1; font-weight: 200; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: #c9a45c; } .ds-p { color: #9bab9f; } .ds-en { margin: 0; font-size: 1.625rem; font-weight: 600; line-height: 1.28; text-wrap: balance; } .ds-es { margin: 0.625rem 0 0; font-size: 1.25rem; line-height: 1.4; max-width: 52ch; }"
+    },
+    {
+      "name": "Suggested Answer",
+      "kind": "custom",
+      "refersTo": "answer",
+      "description": "Largest running text, set directly on the wall; gaps highlighted in brass tint.",
+      "html": "<p class=\"ds-answer\">I led a team of <mark class=\"ds-gap\">[número de personas]</mark> and shipped on time.</p>",
+      "css": ".ds-answer { margin: 0; max-width: 30em; font-family: 'Public Sans Variable', system-ui, sans-serif; font-size: 2rem; font-weight: 420; line-height: 1.42; text-wrap: pretty; color: #dcd8c8; } .ds-gap { padding: 0 0.15em; border-radius: 3px; background: color-mix(in oklab, #c9a45c 22%, transparent); color: #dcd8c8; }"
+    },
+    {
+      "name": "Alert",
+      "kind": "custom",
+      "refersTo": "alert",
+      "description": "Clay-outlined error with action; clay is for errors only.",
+      "html": "<div class=\"ds-alert\"><p>Cuota agotada. Intenta de nuevo en unos minutos.</p><button class=\"ds-alert-btn\">Ajustes</button></div>",
+      "css": ".ds-alert { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; padding: 0.75rem 1rem; border: 1px solid #e8a08a; border-radius: 6px; color: #e8a08a; font-family: 'Public Sans Variable', system-ui, sans-serif; } .ds-alert p { margin: 0; flex: 1 1 18ch; } .ds-alert-btn { background: transparent; border: 1px solid #e8a08a; border-radius: 6px; color: #e8a08a; padding: 0.375rem 0.875rem; font: inherit; cursor: pointer; } .ds-alert-btn:focus-visible { outline: 2px solid #e0bf7c; outline-offset: 2px; }"
+    },
+    {
+      "name": "Status Bar",
+      "kind": "nav",
+      "refersTo": "button",
+      "description": "Status dot and text on the left, controls right, seam beneath.",
+      "html": "<header class=\"ds-bar\"><span class=\"ds-dot\"></span><span class=\"ds-status\">Escuchando</span><button class=\"ds-bar-btn\">Ajustes</button></header>",
+      "css": ".ds-bar { display: flex; align-items: center; gap: 0.5rem 0.75rem; padding: 0.625rem 1.25rem; background: #0f261b; border-bottom: 1px solid #305040; color: #b2bcae; font-family: 'Public Sans Variable', system-ui, sans-serif; } .ds-dot { width: 0.625rem; height: 0.625rem; border-radius: 50%; background: #c9a45c; } .ds-status { flex: 1; } .ds-bar-btn { min-height: 2.25rem; padding: 0.375rem 0.875rem; background: transparent; border: 1px solid transparent; border-radius: 6px; color: #dcd8c8; font: inherit; cursor: pointer; } .ds-bar-btn:hover { background: #143024; } .ds-bar-btn:focus-visible { outline: 2px solid #e0bf7c; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Bilingual Wall Label",
+    "overview": "The screen is a gallery wall, not a dashboard. Each interviewer question is an exhibit with a catalogue number (P-07) and a plate that carries English above and Spanish below. The wall is deep ink green, never gray. Pieces are separated by 1px seams, not cards, and nothing casts a shadow. Type is a calm institutional grotesque in muted bone, with brightness held low because the user reads at night, on a call, and must not give the tool away on camera.\n\nHierarchy comes from scale and weight, not colour. The suggested answer is the largest running text on the screen because it is read aloud; the question plate carries equal weight at a glance. Brass is the single accent: it marks listening, the primary action and the catalogue numeral. Clay is reserved for errors. One layout serves two densities: a full wall of transcript and focus columns, and a floating compact mode where the transcript folds behind a toggle.",
+    "keyCharacteristics": [
+      "Ink-green wall, one raised plate, 1px seams as the only dividers.",
+      "No shadows. Depth is tonal (wall, wall-raised, plate) plus hairline borders.",
+      "Single typeface (Public Sans Variable), contrast through a large scale jump (15px to 32px) and a 200-weight numeral.",
+      "Brass as sole accent; clay only for errors; partial text sinks to the quiet green-gray.",
+      "Density switches by container query, not by viewport media query."
+    ],
+    "rules": [
+      { "name": "The One Metal Rule", "body": "Brass is the only accent and clay the only alarm. A third hue means the system has been left.", "section": "colors" },
+      { "name": "The Partial Sinks Rule", "body": "Unfinished text is Quiet Sage; final text is Bone Ink. Never differentiate with motion or glow.", "section": "colors" },
+      { "name": "The Answer Is Loudest Rule", "body": "The answer is the largest running text on any surface; nothing else exceeds it except the numeral, which is light and brief.", "section": "typography" },
+      { "name": "The Seam Not Shadow Rule", "body": "Separate with a 1px seam or a tonal step. Never a shadow, never a card inside a card.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the wall green (#0f261b family); lift with Raised Wall or Plate Green, never with gray.",
+      "Do divide with 1px Seam lines.",
+      "Do keep the answer the largest running text and cap it at 30em.",
+      "Do switch density with the `app` container query at 759px, not viewport media queries.",
+      "Do render the numeral as `P-` in Quiet Sage plus digits in brass, tabular, weight 200.",
+      "Do show the 2px Focus Brass outline on every focusable control."
+    ],
+    "donts": [
+      "Don't add shadows, glows or flicker; nothing may blink or shine on camera.",
+      "Don't introduce a second accent or use clay for anything but errors.",
+      "Don't nest cards or put the answer in a bordered box.",
+      "Don't use a second typeface.",
+      "Don't use pure white or pure black text; the brightest value is Bone Ink."
+    ]
+  }
+}
