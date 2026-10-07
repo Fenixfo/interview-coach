@@ -6,3 +6,4 @@ export * from "./profile";
 export * from "./prompts";
 export * from "./gemini";
 export * from "./rolling-transcriber";
+export * from "./session";
