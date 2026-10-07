@@ -1,4 +1,6 @@
 export interface UserProfile {
+  /** Resumen de CV o información personal, pegado o cargado desde un archivo. */
+  summary: string;
   targetRole: string;
   education: string;
   experience: string;
@@ -9,6 +11,7 @@ export interface UserProfile {
 }
 
 export const EMPTY_PROFILE: UserProfile = {
+  summary: "",
   targetRole: "",
   education: "",
   experience: "",
@@ -34,6 +37,7 @@ export const PROFILE_FIELDS: ReadonlyArray<{
 ];
 
 const SECTION_TITLES: Record<keyof UserProfile, string> = {
+  summary: "CV / personal summary",
   targetRole: "Target role",
   education: "Education",
   experience: "Experience",
@@ -43,10 +47,13 @@ const SECTION_TITLES: Record<keyof UserProfile, string> = {
   strengths: "Strengths",
 };
 
+/** Máximo de caracteres del resumen que viajan en cada prompt. */
+export const MAX_SUMMARY = 8000;
+
 /** Perfil en texto para los prompts. Los campos vacíos se omiten. */
 export function profileToPromptText(p: UserProfile): string {
   const lines = (Object.keys(SECTION_TITLES) as Array<keyof UserProfile>)
     .filter((k) => p[k].trim())
-    .map((k) => `${SECTION_TITLES[k]}: ${p[k].trim()}`);
+    .map((k) => `${SECTION_TITLES[k]}: ${p[k].trim().slice(0, k === "summary" ? MAX_SUMMARY : 4000)}`);
   return lines.length ? lines.join("\n") : "(The profile is empty.)";
 }
