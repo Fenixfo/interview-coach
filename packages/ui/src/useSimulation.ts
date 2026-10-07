@@ -49,8 +49,14 @@ function speak(text: string): Promise<void> {
     u.rate = 0.95;
     const voice = synth.getVoices().find((v) => v.lang === "en-US");
     if (voice) u.voice = voice;
-    u.onend = () => resolve();
-    u.onerror = () => resolve();
+    // Si la síntesis se atasca (sin voces instaladas, por ejemplo), seguimos igual.
+    const safety = setTimeout(resolve, 4000 + text.length * 90);
+    const done = () => {
+      clearTimeout(safety);
+      resolve();
+    };
+    u.onend = done;
+    u.onerror = done;
     synth.speak(u);
   });
 }

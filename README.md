@@ -2,7 +2,7 @@
 
 Aplicación para practicar entrevistas de trabajo en inglés. Escucha al entrevistador, muestra la transcripción en inglés y su traducción al español en vivo, detecta cuándo termina la pregunta y sugiere una respuesta en primera persona basada en tu perfil.
 
-> Estado: **Fase 1 (escritorio, Windows) en desarrollo.** La web y el celular vienen después. Ver el plan por fases más abajo.
+> Estado: **Fases 1 y 2 (escritorio, Windows).** La web y el celular vienen después. Ver el plan por fases más abajo.
 
 ## Cómo funciona
 
@@ -11,6 +11,16 @@ Aplicación para practicar entrevistas de trabajo en inglés. Escucha al entrevi
 3. Traduce al español en vivo con el traductor gratuito de Google; si falla, usa Gemini solo para frases completas.
 4. Cierra la pregunta tras una pausa (1,5 s por defecto, configurable).
 5. Si el texto parece una pregunta, genera con **Gemini** una respuesta de 60 a 120 palabras, en inglés sencillo (nivel B2 por defecto), con método STAR en preguntas de comportamiento. Si a tu perfil le falta un dato, deja un marcador como `[número de clientes]` en lugar de inventarlo.
+
+## Modos
+
+- **En vivo:** escucha el audio del sistema (o el micrófono) y muestra pregunta, traducción y respuesta sugerida. Incluye ventana flotante siempre visible.
+- **Simulación:** escribes un cargo y Gemini genera preguntas, las lee en voz alta y escucha tu respuesta por el micrófono. Al final recibes retroalimentación en español sobre gramática, vocabulario y claridad. Necesita tu clave de Gemini.
+- **Historial:** cada sesión en vivo o simulación se guarda en tu equipo (hasta 200). Puedes verla, eliminarla o exportarla a Markdown.
+
+## Actualizaciones automáticas
+
+La app instalada busca versiones nuevas en GitHub Releases al abrir, las descarga y te avisa con un botón "Reiniciar e instalar". En desarrollo no se activan. El instalador no está firmado, así que Windows puede mostrar una advertencia de SmartScreen.
 
 ## Instalación para desarrollo (Windows)
 
@@ -67,13 +77,15 @@ apps/mobile     (pendiente) Capacitor, Android primero
 | Fase | Contenido | Estado |
 |---|---|---|
 | 0 | Investigación y plan | Hecha |
-| 1 | Escritorio Windows (MVP): audio del sistema, Whisper local, traducción, Gemini, pantalla, instalador | En curso |
-| 2 | Modo simulación con voz, historial exportable, actualizaciones automáticas | Pendiente |
+| 1 | Escritorio Windows (MVP): audio del sistema, Whisper local, traducción, Gemini, pantalla, instalador | Hecha (PR abierto) |
+| 2 | Modo simulación con voz, historial exportable, actualizaciones automáticas | En revisión |
 | 3 | Web (PWA en GitHub Pages) | Pendiente |
 | 4 | Celular (Capacitor, Android primero) | Pendiente |
 
 ## Limitaciones conocidas
 
+- La simulación lee las preguntas con las voces de Windows: la calidad depende de las voces en inglés que tengas instaladas.
+- Las actualizaciones automáticas no se han probado todavía (hacen falta dos versiones publicadas).
 - Solo Windows para el audio del sistema (el *loopback* de Electron es exclusivo de Windows).
 - El traductor gratuito usa un endpoint no oficial de Google y puede dejar de funcionar.
 - Las pausas de la persona que habla pueden partir una pregunta larga en dos fichas.

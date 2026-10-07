@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Download, Play, RotateCcw, Settings as SettingsIcon, Square, Volume2 } from "lucide-react";
+import { Download, Play, RotateCcw, Settings as SettingsIcon, Flag, Volume2 } from "lucide-react";
 import { sessionToMarkdown, suggestedFilename, type SessionRecord } from "@interview-coach/core";
 import type { CoachServices, Settings } from "./types";
 import { useSimulation } from "./useSimulation";
@@ -229,7 +229,7 @@ export function SimulationView(props: {
             <Volume2 size={18} aria-hidden /> Repetir pregunta
           </button>
           <button type="button" className="btn btn--quiet" onClick={sim.endEarly}>
-            <Square size={18} aria-hidden /> Terminar ahora
+            <Flag size={18} aria-hidden /> Terminar ahora
           </button>
         </div>
       </section>
