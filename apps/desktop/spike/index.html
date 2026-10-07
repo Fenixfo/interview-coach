@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src blob:" />
+<title>Spike: loopback + Whisper</title>
+<style>
+  body { font: 15px system-ui, sans-serif; margin: 16px; }
+  button, select { font: inherit; padding: 6px 10px; margin-right: 6px; }
+  #partial { color: #777; font-size: 20px; min-height: 2.4em; margin: 14px 0 6px; }
+  #finals { font-size: 20px; }
+  #stats { font: 13px ui-monospace, monospace; color: #444; white-space: pre; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div>
+  <select id="source"><option value="system">Audio del sistema</option><option value="mic">Micrófono</option></select>
+  <select id="model"><option>tiny.en</option><option selected>base.en</option><option>small.en</option></select>
+  <label><input type="checkbox" id="gpu" /> GPU (Vulkan)</label>
+  <button id="go">Iniciar</button>
+</div>
+<div id="partial"></div>
+<div id="finals"></div>
+<div id="stats"></div>
+<script>
+const $ = (id) => document.getElementById(id);
+const TICK_MS = 1000, MAX_WINDOW_S = 10, SILENCE_MS = 1500, RMS_VOICE = 0.012;
+let ctx, stream, node, buffer = [], buffered = 0, busy = false, lastVoiceAt = 0, timer, lat = [];
+
+
+const rms = (a) => { let s = 0; for (const v of a) s += v * v; return Math.sqrt(s / a.length); };
+const concat = () => { const out = new Float32Array(buffered); let o = 0; for (const c of buffer) { out.set(c, o); o += c.length; } return out; };
+
+async function tick(final) {
+  if (busy || buffered < 8000) return;
+  busy = true;
+  try {
+    let pcm = concat();
+    if (pcm.length > MAX_WINDOW_S * 16000) pcm = pcm.subarray(pcm.length - MAX_WINDOW_S * 16000);
+    const { text, ms } = await window.spike.transcribe(pcm, $("model").value, $("gpu").checked);
+    lat.push(ms);
+    console.log(JSON.stringify({ final, ms: Math.round(ms), win: +(pcm.length/16000).toFixed(1), text }));
+    const avg = lat.reduce((a, b) => a + b, 0) / lat.length;
+    $("stats").textContent = `última: ${ms.toFixed(0)} ms | media: ${avg.toFixed(0)} ms | ventana: ${(pcm.length / 16000).toFixed(1)} s | llamadas: ${lat.length}`;
+    if (final) {
+      if (text) $("finals").append(Object.assign(document.createElement("p"), { textContent: text }));
+      $("partial").textContent = "";
+      buffer = []; buffered = 0;
+    } else {
+      $("partial").textContent = text;
+    }
+  } finally { busy = false; }
+}
+
+async function start() {
+  stream = $("source").value === "system"
+    ? await navigator.mediaDevices.getDisplayMedia({ audio: true, video: true })
+    : await navigator.mediaDevices.getUserMedia({ audio: true });
+  stream.getVideoTracks().forEach((t) => t.stop());
+  ctx = new AudioContext({ sampleRate: 16000 });
+  await ctx.audioWorklet.addModule("capture-worklet.js");
+  const src = ctx.createMediaStreamSource(new MediaStream(stream.getAudioTracks()));
+  node = new AudioWorkletNode(ctx, "capture");
+  node.port.onmessage = (e) => {
+    const c = e.data;
+    if (rms(c) > RMS_VOICE) lastVoiceAt = performance.now();
+    if (performance.now() - lastVoiceAt < SILENCE_MS + 500 || buffered > 0) { buffer.push(c); buffered += c.length; }
+  };
+  src.connect(node);
+  lastVoiceAt = 0;
+  timer = setInterval(() => {
+    const silent = buffered > 0 && performance.now() - lastVoiceAt > SILENCE_MS;
+    tick(silent);
+  }, TICK_MS);
+  $("go").textContent = "Detener";
+}
+
+function stop() {
+  clearInterval(timer);
+  node?.disconnect(); ctx?.close(); stream?.getTracks().forEach((t) => t.stop());
+  buffer = []; buffered = 0; $("go").textContent = "Iniciar";
+}
+
+let on = false;
+$("go").onclick = async () => { on = !on; try { on ? await start() : stop(); } catch (e) { on = false; $("stats").textContent = "Error: " + e.message; } };
+</script>
+</body>
+</html>
