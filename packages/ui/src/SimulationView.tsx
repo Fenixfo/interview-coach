@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Download, Play, RotateCcw, Settings as SettingsIcon, Flag, Volume2 } from "lucide-react";
+import { Download, Play, RotateCcw, Settings as SettingsIcon, Flag, SkipForward } from "lucide-react";
 import { sessionToMarkdown, suggestedFilename, type SessionRecord } from "@interview-coach/core";
 import type { CoachServices, Settings } from "./types";
 import { useSimulation } from "./useSimulation";
@@ -89,8 +89,8 @@ export function SimulationView(props: {
         >
           <h2>Simulación de entrevista</h2>
           <p className="hint">
-            Gemini te hará preguntas para el cargo que escribas, las leerá en voz alta y escuchará tu
-            respuesta por el micrófono. Al final recibes retroalimentación sobre tu inglés: gramática,
+            Gemini te hará preguntas para el cargo que escribas, escuchará tu respuesta por el
+            micrófono y pasas a la siguiente pregunta cuando tú lo decidas. Al final recibes retroalimentación sobre tu inglés: gramática,
             vocabulario y claridad.
           </p>
           {props.blocked && (
@@ -190,8 +190,7 @@ export function SimulationView(props: {
     );
   }
 
-  // asking | listening
-  const listening = s.phase === "listening";
+  const last = s.index >= s.questions.length - 1;
   return (
     <main className="sim">
       <article className="ficha" aria-label={`Pregunta ${s.index + 1} de ${s.questions.length}`}>
@@ -212,9 +211,7 @@ export function SimulationView(props: {
       <section className="answer" aria-label="Tu respuesta">
         <h2 className="sr-only">Tu respuesta</h2>
         <p className="hint" role="status">
-          {listening
-            ? "Te escucho. Cuando termines, haz una pausa larga o pulsa «Terminé mi respuesta»."
-            : "Escucha la pregunta…"}
+          Te escucho. Cuando termines, pulsa «{last ? "Terminar y ver retroalimentación" : "Siguiente pregunta"}».
         </p>
         {s.heard && (
           <p className="answer__text" lang="en" data-partial={s.partial ? "true" : undefined}>
@@ -222,11 +219,8 @@ export function SimulationView(props: {
           </p>
         )}
         <div className="row sim__actions">
-          <button type="button" className="btn btn--primary" disabled={!listening} onClick={sim.finishAnswer}>
-            Terminé mi respuesta
-          </button>
-          <button type="button" className="btn" onClick={sim.repeat}>
-            <Volume2 size={18} aria-hidden /> Repetir pregunta
+          <button type="button" className="btn btn--primary" onClick={sim.finishAnswer}>
+            <SkipForward size={18} aria-hidden /> {last ? "Terminar y ver retroalimentación" : "Siguiente pregunta"}
           </button>
           <button type="button" className="btn btn--quiet" onClick={sim.endEarly}>
             <Flag size={18} aria-hidden /> Terminar ahora

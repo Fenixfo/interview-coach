@@ -9,7 +9,7 @@ import {
 } from "@interview-coach/core";
 import type { CoachServices, Settings } from "./types";
 
-export type SimPhase = "setup" | "preparing" | "asking" | "listening" | "evaluating" | "done";
+export type SimPhase = "setup" | "preparing" | "listening" | "evaluating" | "done";
 
 export interface SimState {
   phase: SimPhase;
@@ -36,31 +36,6 @@ const INITIAL: SimState = {
   error: null,
 };
 
-/** Pausa tras la última frase final que da por terminada la respuesta. */
-const ANSWER_PAUSE_MS = 3500;
-
-function speak(text: string): Promise<void> {
-  return new Promise((resolve) => {
-    const synth = typeof window !== "undefined" ? window.speechSynthesis : undefined;
-    if (!synth) return resolve();
-    synth.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-US";
-    u.rate = 0.95;
-    const voice = synth.getVoices().find((v) => v.lang === "en-US");
-    if (voice) u.voice = voice;
-    // Si la síntesis se atasca (sin voces instaladas, por ejemplo), seguimos igual.
-    const safety = setTimeout(resolve, 4000 + text.length * 90);
-    const done = () => {
-      clearTimeout(safety);
-      resolve();
-    };
-    u.onend = done;
-    u.onerror = done;
-    synth.speak(u);
-  });
-}
-
 export function useSimulation(services: CoachServices, settings: Settings) {
   const [state, setState] = useState<SimState>(INITIAL);
   const ctl = useRef({
@@ -72,13 +47,12 @@ export function useSimulation(services: CoachServices, settings: Settings) {
 
   const patch = useCallback((p: Partial<SimState>) => setState((s) => ({ ...s, ...p })), []);
 
-  /** Escucha la respuesta del usuario por micrófono hasta una pausa larga o hasta `finishAnswer()`. */
+  /** Escucha la respuesta por micrófono hasta que el usuario pulsa el botón (`finishAnswer()`). */
   const listen = useCallback(
     (token: number) =>
       new Promise<string>((resolve, reject) => {
         const finals: string[] = [];
         let partial = "";
-        let lastFinalAt = 0;
         let stopAudio: (() => void) | null = null;
         let tick: ReturnType<typeof setInterval> | undefined;
         let settled = false;
@@ -90,7 +64,6 @@ export function useSimulation(services: CoachServices, settings: Settings) {
             if (e.isFinal) {
               finals.push(e.text);
               partial = "";
-              lastFinalAt = Date.now();
             } else {
               partial = e.text;
             }
@@ -116,7 +89,6 @@ export function useSimulation(services: CoachServices, settings: Settings) {
             tick = setInterval(() => {
               if (token !== ctl.current.run) return done();
               rolling.tick(Date.now()).catch(() => {});
-              if (finals.length > 0 && Date.now() - lastFinalAt > ANSWER_PAUSE_MS) done();
             }, 1000);
           })
           .catch((err) => {
@@ -153,10 +125,7 @@ export function useSimulation(services: CoachServices, settings: Settings) {
 
         for (let i = 0; i < questions.length; i++) {
           if (!alive()) return;
-          patch({ index: i, phase: "asking", heard: "", partial: false });
-          await speak(questions[i] as string);
-          if (!alive()) return;
-          patch({ phase: "listening" });
+          patch({ index: i, phase: "listening", heard: "", partial: false });
           const answer = await listen(token);
           if (!alive()) return;
           answers.push(answer);
@@ -201,17 +170,10 @@ export function useSimulation(services: CoachServices, settings: Settings) {
     [services, settings.model, listen, patch],
   );
 
-  const repeat = useCallback(() => {
-    // Repite la pregunta en voz alta sin interrumpir la escucha.
-    const q = state.questions[state.index];
-    if (q) void speak(q);
-  }, [state.questions, state.index]);
-
   const finishAnswer = useCallback(() => ctl.current.finish?.(), []);
 
   const stopAll = useCallback(() => {
     ctl.current.run++;
-    window.speechSynthesis?.cancel();
     ctl.current.finish?.();
     setState(INITIAL);
   }, []);
@@ -223,7 +185,6 @@ export function useSimulation(services: CoachServices, settings: Settings) {
     const role = state.role;
     const heard = state.heard;
     ctl.current.run++;
-    window.speechSynthesis?.cancel();
     ctl.current.finish?.();
     const all = heard.trim() ? [...answers, heard.trim()] : answers;
     const token = ++ctl.current.run;
@@ -249,13 +210,12 @@ export function useSimulation(services: CoachServices, settings: Settings) {
   useEffect(
     () => () => {
       ctl.current.run++;
-      window.speechSynthesis?.cancel();
-      ctl.current.finish?.();
+        ctl.current.finish?.();
     },
     [],
   );
 
-  return { state, start, repeat, finishAnswer, stopAll, endEarly, reset: stopAll };
+  return { state, start, finishAnswer, stopAll, endEarly, reset: stopAll };
 }
 
 export type Simulation = ReturnType<typeof useSimulation>;

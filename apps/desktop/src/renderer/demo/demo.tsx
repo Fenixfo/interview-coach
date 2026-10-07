@@ -110,6 +110,7 @@ const services: CoachServices = {
   load: async () => ({
     settings: DEFAULT_SETTINGS,
     profile: {
+      summary: "",
       targetRole: "Project coordinator",
       education: "BSc in Industrial Engineering",
       experience: "4 years coordinating logistics projects",
