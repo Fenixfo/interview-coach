@@ -1,4 +1,4 @@
-import type { AudioSourceKind, EnglishLevel, UserProfile } from "@interview-coach/core";
+import type { AudioSourceKind, EnglishLevel, SessionRecord, UserProfile } from "@interview-coach/core";
 
 export interface Settings {
   model: string;
@@ -42,6 +42,15 @@ export interface CoachServices {
     onChunk: (text: string) => void,
     signal: AbortSignal,
   ): Promise<string>;
+  /** Una sola respuesta de Gemini (preguntas de simulación, retroalimentación). */
+  complete(req: { prompt: string; system?: string; model: string }): Promise<string>;
+  history: {
+    list(): Promise<SessionRecord[]>;
+    save(rec: SessionRecord): Promise<void>;
+    remove(id: string): Promise<void>;
+  };
+  /** Pide dónde guardar y escribe el archivo. Devuelve false si se cancela. */
+  exportFile(name: string, content: string): Promise<boolean>;
   key: {
     has(): Promise<boolean>;
     set(key: string): Promise<void>;
@@ -51,6 +60,11 @@ export interface CoachServices {
   save(p: Persisted): Promise<void>;
   /** Estado del modelo de voz local (solo escritorio). */
   onModelStatus?(cb: (s: ModelStatus) => void): () => void;
+  /** Avisos de actualización automática (solo escritorio instalado). */
+  onUpdate?(cb: (s: UpdateInfo) => void): () => void;
+  installUpdate?(): Promise<void>;
   /** Modo flotante: ventana compacta y siempre visible (solo escritorio). */
   setFloating?(on: boolean): Promise<void>;
 }
+
+export type UpdateInfo = { state: "available" | "downloaded"; version: string };

@@ -1,4 +1,5 @@
-import { app, BrowserWindow, desktopCapturer, ipcMain, Menu, session, shell } from "electron";
+import { app, BrowserWindow, desktopCapturer, dialog, ipcMain, Menu, session, shell } from "electron";
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   GeminiClient,
@@ -6,14 +7,40 @@ import {
   answerUserPrompt,
   toApiError,
 } from "@interview-coach/core";
-import { CH, type AnswerRequest, type Result } from "../shared/ipc";
-import { clearKey, getKey, hasKey, loadPersisted, savePersisted, setKey } from "./store";
+import { CH, type AnswerRequest, type CompleteRequest, type Result, type UpdateStatus } from "../shared/ipc";
+import {
+  clearKey,
+  getKey,
+  hasKey,
+  listHistory,
+  loadPersisted,
+  removeSession,
+  savePersisted,
+  saveSession,
+  setKey,
+} from "./store";
 import { ensureModel, transcribe } from "./whisper";
 import { translate } from "./translate";
 
 let win: BrowserWindow | null = null;
 let normalBounds: Electron.Rectangle | null = null;
 const answers = new Map<string, AbortController>();
+let updater: { quitAndInstall(): void } | null = null;
+
+/** Busca actualizaciones en GitHub Releases (solo en la app instalada). */
+function setupUpdates(): void {
+  if (!app.isPackaged) return;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { autoUpdater } = require("electron-updater") as typeof import("electron-updater");
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+  updater = autoUpdater;
+  const send = (s: UpdateStatus) => win?.webContents.send(CH.updateStatus, s);
+  autoUpdater.on("update-available", (i) => send({ state: "available", version: i.version }));
+  autoUpdater.on("update-downloaded", (i) => send({ state: "downloaded", version: i.version }));
+  autoUpdater.on("error", () => {}); // sin red o sin versión nueva: no molestamos
+  void autoUpdater.checkForUpdates().catch(() => {});
+}
 
 async function wrap<T>(fn: () => Promise<T> | T): Promise<Result<T>> {
   try {
@@ -61,6 +88,36 @@ function registerIpc(): void {
       }
     }),
   );
+  ipcMain.handle(CH.complete, (_e, req: CompleteRequest) =>
+    wrap(async () => {
+      const key = getKey();
+      if (!key) throw toApiError({ status: 401, message: "API key not valid" });
+      const gemini = new GeminiClient({ apiKey: key, model: String(req.model) });
+      return gemini.complete(String(req.prompt).slice(0, 20000), req.system?.slice(0, 20000));
+    }),
+  );
+
+  ipcMain.handle(CH.historyList, () => listHistory());
+  ipcMain.handle(CH.historySave, (_e, rec: { id?: unknown }) => {
+    if (!rec || typeof rec.id !== "string") throw new Error("Sesión no válida.");
+    saveSession(rec as { id: string });
+  });
+  ipcMain.handle(CH.historyRemove, (_e, id: string) => removeSession(String(id)));
+
+  ipcMain.handle(CH.exportFile, async (_e, name: string, content: string) => {
+    if (!win) return false;
+    const safe = String(name).replace(/[\/:*?"<>|]/g, "-").slice(0, 120) || "sesion.md";
+    const r = await dialog.showSaveDialog(win, {
+      defaultPath: safe,
+      filters: [{ name: "Markdown", extensions: ["md"] }],
+    });
+    if (r.canceled || !r.filePath) return false;
+    await writeFile(r.filePath, String(content), "utf8");
+    return true;
+  });
+
+  ipcMain.handle(CH.updateInstall, () => updater?.quitAndInstall());
+
   ipcMain.handle(CH.answerCancel, (_e, id: string) => answers.get(id)?.abort());
 
   ipcMain.handle(CH.floating, (_e, on: boolean) => {
@@ -135,6 +192,7 @@ app.whenReady().then(() => {
 
   registerIpc();
   createWindow();
+  setupUpdates();
 });
 
 app.on("window-all-closed", () => app.quit());

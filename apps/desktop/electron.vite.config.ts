@@ -21,7 +21,7 @@ export default defineConfig(({ command }) => ({
       externalizeDeps: { exclude: ["@interview-coach/core"] },
       rollupOptions: {
         input: { index: resolve("src/main/index.ts") },
-        external: ["electron", "@kutalia/whisper-node-addon"],
+        external: ["electron", "electron-updater", "@kutalia/whisper-node-addon"],
         output: { format: "cjs", entryFileNames: "[name].js" },
       },
     },

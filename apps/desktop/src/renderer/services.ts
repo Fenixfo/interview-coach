@@ -1,5 +1,5 @@
-import { ApiError } from "@interview-coach/core";
-import type { CoachServices, ModelStatus, Persisted } from "@interview-coach/ui";
+import { ApiError, type SessionRecord } from "@interview-coach/core";
+import type { CoachServices, ModelStatus, Persisted, UpdateInfo } from "@interview-coach/ui";
 import type { CoachBridge } from "../preload";
 import type { Result } from "../shared/ipc";
 import { startAudio } from "./audio";
@@ -39,6 +39,14 @@ export const desktopServices: CoachServices = {
       signal.removeEventListener("abort", cancel);
     }
   },
+  complete: async ({ prompt, system, model }) =>
+    unwrap(await b().complete({ prompt, model, ...(system ? { system } : {}) })),
+  history: {
+    list: async () => (await b().historyList()) as SessionRecord[],
+    save: (rec) => b().historySave(rec),
+    remove: (id) => b().historyRemove(id),
+  },
+  exportFile: (name, content) => b().exportFile(name, content),
   key: {
     has: () => b().keyHas(),
     set: (k) => b().keySet(k),
@@ -47,5 +55,7 @@ export const desktopServices: CoachServices = {
   load: async () => (await b().load()) as Persisted | null,
   save: (p) => b().save(p),
   onModelStatus: (cb) => b().onModelStatus((s) => cb(s as ModelStatus)),
+  onUpdate: (cb) => b().onUpdateStatus((s) => cb(s as UpdateInfo)),
+  installUpdate: () => b().updateInstall(),
   setFloating: (on) => b().setFloating(on),
 };

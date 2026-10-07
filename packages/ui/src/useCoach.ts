@@ -53,6 +53,8 @@ export function useCoach(services: CoachServices) {
   const [modelStatus, setModelStatus] = useState<ModelStatus>({ state: "ready" });
   const [floating, setFloatingState] = useState(false);
 
+  const sess = useRef<{ id: string; startedAt: string } | null>(null);
+
   const live = useRef({
     settings,
     profile,
@@ -98,6 +100,24 @@ export function useCoach(services: CoachServices) {
     const t = setTimeout(() => void services.save({ settings, profile }), 400);
     return () => clearTimeout(t);
   }, [settings, profile, loaded, services]);
+
+  // Cada sesión en vivo con al menos una pregunta se guarda sola en el historial local.
+  useEffect(() => {
+    if (turns.length === 0) {
+      sess.current = null;
+      return;
+    }
+    sess.current ??= { id: crypto.randomUUID(), startedAt: new Date().toISOString() };
+    if (turns.some((t) => t.answering)) return;
+    const rec = {
+      id: sess.current.id,
+      kind: "live" as const,
+      startedAt: sess.current.startedAt,
+      turns: turns.map((t) => ({ question: t.en, translation: t.es, answer: t.answer })),
+    };
+    const timer = setTimeout(() => void services.history.save(rec).catch(() => {}), 800);
+    return () => clearTimeout(timer);
+  }, [turns, services]);
 
   const fail = useCallback((err: unknown) => {
     const e = err instanceof ApiError ? err : toApiError(err);

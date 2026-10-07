@@ -15,7 +15,11 @@ import {
 import type { AudioSourceKind } from "@interview-coach/core";
 import { useCoach, type Coach, type Status, type Turn } from "./useCoach";
 import { SettingsView } from "./SettingsView";
-import type { CoachServices } from "./types";
+import { SimulationView } from "./SimulationView";
+import { HistoryView } from "./HistoryView";
+import type { CoachServices, UpdateInfo } from "./types";
+
+type View = "coach" | "sim" | "history" | "settings";
 
 const SOURCE_LABEL: Record<AudioSourceKind, string> = {
   system: "Audio del sistema",
@@ -50,10 +54,20 @@ const wordCount = (t: string) => (t.trim() ? t.trim().split(/\s+/).length : 0);
 
 export function CoachApp({ services }: { services: CoachServices }) {
   const coach = useCoach(services);
-  const [view, setView] = useState<"coach" | "settings">("coach");
+  const [view, setView] = useState<View>("coach");
   const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [update, setUpdate] = useState<UpdateInfo | null>(null);
+
+  useEffect(() => {
+    const off = services.onUpdate?.(setUpdate);
+    return () => {
+      off?.();
+    };
+  }, [services]);
 
   if (!coach.loaded) return <div className="app" aria-busy="true" />;
+
+  const toSettings = () => setView("settings");
 
   return (
     <div className="app" data-transcript={transcriptOpen ? "open" : "closed"}>
@@ -65,26 +79,104 @@ export function CoachApp({ services }: { services: CoachServices }) {
             </button>
           </header>
           <SettingsView coach={coach} />
-          <Privacy />
         </>
       ) : (
         <>
-          <Toolbar
-            coach={coach}
-            sources={services.availableSources}
-            canFloat={!!services.setFloating}
-            transcriptOpen={transcriptOpen}
-            onToggleTranscript={() => setTranscriptOpen((v) => !v)}
-            onSettings={() => setView("settings")}
+          <Nav
+            view={view}
+            onView={setView}
+            update={update}
+            onInstall={() => void services.installUpdate?.()}
+            liveRunning={coach.running}
           />
-          <main className="body">
-            <LivePanel coach={coach} />
-            <FocusPanel coach={coach} onSettings={() => setView("settings")} />
-          </main>
-          <Privacy />
+          {view === "coach" && (
+            <div className="screen">
+              <Toolbar
+                coach={coach}
+                sources={services.availableSources}
+                canFloat={!!services.setFloating}
+                transcriptOpen={transcriptOpen}
+                onToggleTranscript={() => setTranscriptOpen((v) => !v)}
+              />
+              <main className="body">
+                <LivePanel coach={coach} />
+                <FocusPanel coach={coach} onSettings={toSettings} />
+              </main>
+            </div>
+          )}
+          {view === "sim" && (
+            <SimulationView
+              services={services}
+              settings={coach.settings}
+              defaultRole={coach.profile.targetRole}
+              hasKey={coach.hasKey}
+              blocked={coach.running}
+              onSettings={toSettings}
+            />
+          )}
+          {view === "history" && <HistoryView services={services} />}
         </>
       )}
+      <Privacy />
     </div>
+  );
+}
+
+function Nav(props: {
+  view: View;
+  onView: (v: View) => void;
+  update: UpdateInfo | null;
+  onInstall: () => void;
+  liveRunning: boolean;
+}) {
+  const tabs: Array<[View, string]> = [
+    ["coach", "En vivo"],
+    ["sim", "Simulación"],
+    ["history", "Historial"],
+  ];
+  return (
+    <header className="nav">
+      <div className="tabs" role="tablist" aria-label="Modo">
+        {tabs.map(([v, label]) => (
+          <button
+            key={v}
+            type="button"
+            role="tab"
+            className="tab"
+            aria-selected={props.view === v}
+            onClick={() => props.onView(v)}
+          >
+            {label}
+            {v === "coach" && props.liveRunning && props.view !== "coach" && (
+              <span className="tab__dot" role="img" aria-label="en curso" />
+            )}
+          </button>
+        ))}
+      </div>
+      {props.update && (
+        <div className="nav__update" role="status">
+          {props.update.state === "downloaded" ? (
+            <>
+              <span>Versión {props.update.version} lista.</span>
+              <button type="button" className="btn btn--sm" onClick={props.onInstall}>
+                Reiniciar e instalar
+              </button>
+            </>
+          ) : (
+            <span>Descargando la versión {props.update.version}…</span>
+          )}
+        </div>
+      )}
+      <button
+        type="button"
+        className="btn btn--quiet nav__settings"
+        onClick={() => props.onView("settings")}
+        aria-label="Ajustes"
+        title="Ajustes"
+      >
+        <SettingsIcon size={18} aria-hidden /> <span className="label">Ajustes</span>
+      </button>
+    </header>
   );
 }
 
@@ -94,7 +186,6 @@ function Toolbar(props: {
   canFloat: boolean;
   transcriptOpen: boolean;
   onToggleTranscript: () => void;
-  onSettings: () => void;
 }) {
   const { coach: c } = props;
   const model = c.modelStatus;
@@ -106,11 +197,6 @@ function Toolbar(props: {
             <span className="status__error" title={c.error.message}>
               {c.error.message}
             </span>
-            {c.error.kind === "invalid_key" && (
-              <button type="button" className="btn btn--sm" onClick={props.onSettings}>
-                Abrir Ajustes
-              </button>
-            )}
             <button type="button" className="btn btn--sm" onClick={c.dismissError}>
               Cerrar
             </button>
@@ -216,15 +302,6 @@ function Toolbar(props: {
           </button>
         )}
 
-        <button
-          type="button"
-          className="btn btn--quiet"
-          onClick={props.onSettings}
-          aria-label="Ajustes"
-          title="Ajustes"
-        >
-          <SettingsIcon size={18} aria-hidden /> <span className="label">Ajustes</span>
-        </button>
       </div>
     </header>
   );

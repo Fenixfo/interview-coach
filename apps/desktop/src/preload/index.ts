@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { CH } from "../shared/ipc";
-import type { AnswerRequest, Result } from "../shared/ipc";
+import type { AnswerRequest, CompleteRequest, Result } from "../shared/ipc";
 
 /** API mínima: cada método llama a un canal fijo. No se expone ipcRenderer. */
 const bridge = {
@@ -18,6 +18,18 @@ const bridge = {
     const h = (_e: unknown, id: string, chunk: string) => cb(id, chunk);
     ipcRenderer.on(CH.answerChunk, h);
     return () => ipcRenderer.removeListener(CH.answerChunk, h);
+  },
+  complete: (req: CompleteRequest): Promise<Result<string>> => ipcRenderer.invoke(CH.complete, req),
+  historyList: (): Promise<unknown[]> => ipcRenderer.invoke(CH.historyList),
+  historySave: (rec: unknown): Promise<void> => ipcRenderer.invoke(CH.historySave, rec),
+  historyRemove: (id: string): Promise<void> => ipcRenderer.invoke(CH.historyRemove, id),
+  exportFile: (name: string, content: string): Promise<boolean> =>
+    ipcRenderer.invoke(CH.exportFile, name, content),
+  updateInstall: (): Promise<void> => ipcRenderer.invoke(CH.updateInstall),
+  onUpdateStatus: (cb: (s: unknown) => void): (() => void) => {
+    const h = (_e: unknown, s: unknown) => cb(s);
+    ipcRenderer.on(CH.updateStatus, h);
+    return () => ipcRenderer.removeListener(CH.updateStatus, h);
   },
   setFloating: (on: boolean): Promise<void> => ipcRenderer.invoke(CH.floating, on),
   onModelStatus: (cb: (s: unknown) => void): (() => void) => {

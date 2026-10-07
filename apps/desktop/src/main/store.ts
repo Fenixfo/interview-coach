@@ -47,3 +47,27 @@ export function setKey(key: string): void {
 export function clearKey(): void {
   if (hasKey()) unlinkSync(file("gemini.key"));
 }
+
+const MAX_SESSIONS = 200;
+
+export function listHistory(): unknown[] {
+  try {
+    const data: unknown = JSON.parse(readFileSync(file("history.json"), "utf8"));
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Inserta o reemplaza por id; lo más reciente primero. */
+export function saveSession(rec: { id: string }): void {
+  const rest = listHistory().filter((r) => (r as { id?: string }).id !== rec.id);
+  writeAtomic(file("history.json"), JSON.stringify([rec, ...rest].slice(0, MAX_SESSIONS), null, 2));
+}
+
+export function removeSession(id: string): void {
+  writeAtomic(
+    file("history.json"),
+    JSON.stringify(listHistory().filter((r) => (r as { id?: string }).id !== id), null, 2),
+  );
+}
