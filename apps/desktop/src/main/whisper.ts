@@ -10,7 +10,8 @@ const MODEL_URL = `https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggm
 
 type Transcribe = (o: Record<string, unknown>) => Promise<{ transcription: string[][] | string[] }>;
 let addon: Transcribe | null = null;
-let useGpu = true;
+/** CPU por defecto: Vulkan en una GPU integrada comparte la RAM y puede tumbar equipos con poca memoria. COACH_WHISPER_GPU=1 lo activa. */
+let useGpu = process.env["COACH_WHISPER_GPU"] === "1";
 let downloading: Promise<void> | null = null;
 
 const userModel = () => join(app.getPath("userData"), "models", `ggml-${MODEL}.bin`);
