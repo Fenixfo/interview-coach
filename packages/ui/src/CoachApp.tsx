@@ -17,6 +17,7 @@ import { useCoach, type Coach, type Status, type Turn } from "./useCoach";
 import { SettingsView } from "./SettingsView";
 import { SimulationView } from "./SimulationView";
 import { HistoryView } from "./HistoryView";
+import { lengthTier } from "./lengthTier";
 import type { CoachServices, UpdateInfo } from "./types";
 
 type View = "coach" | "sim" | "history" | "settings";
@@ -421,7 +422,7 @@ function FocusPanel({ coach: c, onSettings }: { coach: Coach; onSettings: () => 
           <section className="answer" aria-label="Respuesta sugerida">
             <h2 className="sr-only">Respuesta sugerida</h2>
             {turn.answer ? (
-              <p className="answer__text" lang="en" aria-live="off">
+              <p className="answer__text" lang="en" aria-live="off" data-len={lengthTier(turn.answer)}>
                 {withGaps(turn.answer)}
               </p>
             ) : null}

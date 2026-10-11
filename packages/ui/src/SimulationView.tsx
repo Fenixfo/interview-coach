@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Download, Play, RotateCcw, Settings as SettingsIcon, Flag, SkipForward } from "lucide-react";
 import { sessionToMarkdown, suggestedFilename, type SessionRecord } from "@interview-coach/core";
 import type { CoachServices, Settings } from "./types";
+import { lengthTier } from "./lengthTier";
 import { useSimulation } from "./useSimulation";
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -214,7 +215,7 @@ export function SimulationView(props: {
           Te escucho. Cuando termines, pulsa «{last ? "Terminar y ver retroalimentación" : "Siguiente pregunta"}».
         </p>
         {s.heard && (
-          <p className="answer__text" lang="en" data-partial={s.partial ? "true" : undefined}>
+          <p className="answer__text" lang="en" data-partial={s.partial ? "true" : undefined} data-len={lengthTier(s.heard)}>
             {s.heard}
           </p>
         )}

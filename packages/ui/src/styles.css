@@ -827,3 +827,21 @@ input[type="range"] {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* Respuestas largas: letra menor para leerlas completas sin scroll */
+.answer__text[data-len="long"] {
+  font-size: 1rem;
+  line-height: 1.38;
+}
+.answer__text[data-len="xlong"] {
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+@container app (max-width: 759px) {
+  .answer__text[data-len="long"] {
+    font-size: 0.9375rem;
+  }
+  .answer__text[data-len="xlong"] {
+    font-size: 0.8125rem;
+  }
+}
