@@ -1,6 +1,6 @@
 name: Publicar la web (GitHub Pages)
 
-# Requiere en el repositorio: Settings → Pages → Source: "GitHub Actions".
+# Requiere en el repositorio: Settings → Pages → Source: "GitHub Actions" (ya activado).
 on:
   push:
     branches: [main]
