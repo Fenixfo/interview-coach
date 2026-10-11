@@ -78,7 +78,7 @@ export function CoachApp({ services }: { services: CoachServices }) {
               <ArrowLeft size={18} aria-hidden /> <span>Volver</span>
             </button>
           </header>
-          <SettingsView coach={coach} />
+          <SettingsView coach={coach} sources={services.availableSources} />
         </>
       ) : (
         <>

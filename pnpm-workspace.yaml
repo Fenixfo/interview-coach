@@ -7,3 +7,5 @@ allowBuilds:
   "@google/genai": false
   electron-winstaller: false
   protobufjs: false
+  onnxruntime-node: false
+  sharp: false

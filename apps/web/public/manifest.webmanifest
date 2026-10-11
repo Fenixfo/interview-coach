@@ -1,0 +1,11 @@
+{
+  "name": "Coach de entrevistas",
+  "short_name": "Coach",
+  "description": "Practica entrevistas de trabajo en inglés",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f261b",
+  "theme_color": "#0f261b",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

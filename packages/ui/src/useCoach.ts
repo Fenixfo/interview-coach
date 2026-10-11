@@ -37,6 +37,12 @@ export interface CoachError {
   message: string;
 }
 
+/** Si la fuente guardada no existe en esta plataforma, usa la primera disponible. */
+function coerceSource(s: Settings, available: CoachServices["availableSources"]): Settings {
+  const first = available[0];
+  return first && !available.includes(s.audioSource) ? { ...s, audioSource: first } : s;
+}
+
 export function useCoach(services: CoachServices) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [profile, setProfile] = useState<UserProfile>(EMPTY_PROFILE);
@@ -80,8 +86,10 @@ export function useCoach(services: CoachServices) {
     void (async () => {
       const [p, k] = await Promise.all([services.load(), services.key.has()]);
       if (!alive) return;
+      if (!p) setSettings((s) => coerceSource(s, services.availableSources));
       if (p) {
-        setSettings({ ...DEFAULT_SETTINGS, ...p.settings });
+        const merged = { ...DEFAULT_SETTINGS, ...p.settings };
+        setSettings(coerceSource(merged, services.availableSources));
         setProfile({ ...EMPTY_PROFILE, ...p.profile });
       }
       setHasKey(k);
