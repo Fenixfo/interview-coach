@@ -1385,7 +1385,7 @@
       "file_type": "code",
       "norm_label": "feedbacktext()",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L35"
+      "source_location": "L36"
     },
     {
       "id": "packages_ui_src_simulationview_inline",
@@ -1397,7 +1397,7 @@
       "file_type": "code",
       "norm_label": "inline()",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L18"
+      "source_location": "L19"
     },
     {
       "id": "packages_ui_src_simulationview_pad",
@@ -1421,7 +1421,7 @@
       "file_type": "code",
       "norm_label": "simulationview()",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L72"
+      "source_location": "L66"
     },
     {
       "id": "packages_ui_src_simulationview_unlatex",
@@ -7827,7 +7827,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L47",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -7839,7 +7839,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -7851,7 +7851,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L196",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -7863,7 +7863,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L205",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -7875,7 +7875,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L205",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -7887,7 +7887,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L226",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -7899,7 +7899,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L244",
+      "source_location": "L238",
       "weight": 1.0
     },
     {
@@ -7911,7 +7911,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L81",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -16562,7 +16562,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -16573,7 +16573,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -16584,7 +16584,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "packages/ui/src/SimulationView.tsx",
-      "source_location": "L72",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -18262,5 +18262,5 @@
       "source_file": "DESIGN.md"
     }
   ],
-  "built_at_commit": "9f8bc00daa17815b5ee20f6c2e96d0fad10e34f1"
+  "built_at_commit": "b6c18d76ab7911222e4a07ec96648d415ab95de6"
 }

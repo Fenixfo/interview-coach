@@ -12,7 +12,8 @@ const unLatex = (t: string) =>
   t
     .replace(/\$\s*\\(?:rightarrow|to)\s*\$/g, "→")
     .replace(/\$\s*\\leftarrow\s*\$/g, "←")
-    .replace(/\$\s*\\Rightarrow\s*\$/g, "⇒");
+    .replace(/\$\s*\\Rightarrow\s*\$/g, "⇒")
+    .replace(/\s-+>\s/g, " → ");
 
 /** Convierte **negritas** y *cursivas* en <strong> y <em> sin usar HTML crudo. */
 function inline(text: string): ReactNode[] {
@@ -33,40 +34,33 @@ const BULLET = /^\s*(?:[-*•])\s+/;
 
 /** La retroalimentación llega en texto con secciones numeradas; se muestra como párrafos y títulos. */
 export function FeedbackText({ text }: { text: string }) {
-  const blocks = text
+  const lines = text
     .replace(/^#+\s*/gm, "")
-    .split(/\n{2,}/)
-    .map((b) => b.trim())
+    .split("\n")
+    .map((l) => l.trim())
     .filter(Boolean);
-  return (
-    <div className="feedback">
-      {blocks.map((b, i) => {
-        const lines = b.split("\n").map((l) => l.trim()).filter(Boolean);
-        const first = lines[0] ?? "";
-        const isHeading = lines.length === 1 && /^(\d+\.\s+)?\*\*[^*]+\*\*:?$/.test(first);
-        if (isHeading) return <h3 key={i}>{inline(first.replace(/^\d+\.\s+/, ""))}</h3>;
-        if (lines.every((l) => BULLET.test(l))) {
-          return (
-            <ul key={i}>
-              {lines.map((l, j) => (
-                <li key={j}>{inline(l.replace(BULLET, ""))}</li>
-              ))}
-            </ul>
-          );
-        }
-        return (
-          <p key={i}>
-            {lines.map((l, j) => (
-              <span key={j}>
-                {j > 0 && <br />}
-                {inline(l)}
-              </span>
-            ))}
-          </p>
-        );
-      })}
-    </div>
-  );
+  const nodes: ReactNode[] = [];
+  for (let i = 0; i < lines.length; ) {
+    const line = lines[i] ?? "";
+    if (BULLET.test(line)) {
+      const items: string[] = [];
+      while (i < lines.length && BULLET.test(lines[i] ?? "")) items.push((lines[i++] ?? "").replace(BULLET, ""));
+      nodes.push(
+        <ul key={nodes.length}>
+          {items.map((it, j) => (
+            <li key={j}>{inline(it)}</li>
+          ))}
+        </ul>,
+      );
+    } else if (/^(\d+\.\s+)?\*\*[^*]+\*\*:?$/.test(line)) {
+      nodes.push(<h3 key={nodes.length}>{inline(line.replace(/^\d+\.\s+/, ""))}</h3>);
+      i++;
+    } else {
+      nodes.push(<p key={nodes.length}>{inline(line)}</p>);
+      i++;
+    }
+  }
+  return <div className="feedback">{nodes}</div>;
 }
 
 export function SimulationView(props: {
