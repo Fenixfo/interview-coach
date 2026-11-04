@@ -9,6 +9,10 @@ const LEVEL_NOTES: Record<EnglishLevel, string> = {
   C1: "natural professional vocabulary",
 };
 
+/** La pantalla solo interpreta **negritas** y listas con "- "; el LaTeX y otros símbolos se verían como texto suelto. */
+const PLAIN_TEXT_RULE =
+  "Format: plain text only. Use **bold** for labels and '- ' for list items. No LaTeX or $ signs (write → for arrows), no tables, no headings with #, no italics with asterisks.";
+
 export function answerSystemPrompt(profile: UserProfile, level: EnglishLevel = "B2"): string {
   return [
     "You help a Spanish-speaking candidate answer a job interview question in English.",
@@ -59,7 +63,9 @@ export function feedbackPrompt(role: string, turns: SimulationTurn[]): string {
   return [
     `A Spanish-speaking candidate practiced an interview for the role: ${role}.`,
     "Answers are speech transcripts, so ignore punctuation and capitalization.",
-    "Write the feedback IN SPANISH, quoting short English examples where useful. Structure:",
+    "Write the feedback IN SPANISH, quoting short English examples where useful.",
+    PLAIN_TEXT_RULE,
+    "Structure:",
     "1. Resumen general (2-3 frases).",
     "2. Gramática: errores concretos con la corrección.",
     "3. Vocabulario: palabras o frases a mejorar y alternativas.",
@@ -114,6 +120,7 @@ export function answerFeedbackPrompt(question: string, answer: string, context =
     "Evaluate the answer to the question below. The answer may be typed or a speech transcript,",
     "so ignore punctuation and capitalization.",
     "Write the feedback IN SPANISH, quoting short English examples where useful. Be concrete and brief.",
+    PLAIN_TEXT_RULE,
     "Structure, each part starting with its bold label:",
     "**Qué busca la pregunta:** una frase sobre lo que quiere saber el entrevistador.",
     "**Contenido:** ¿contesta la pregunta? ¿Qué falta o sobra? En preguntas de comportamiento revisa el método STAR.",

@@ -7,12 +7,29 @@ import { useSimulation } from "./useSimulation";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-/** Convierte **negritas** en <strong> sin usar HTML crudo. */
+/** Gemini a veces escribe flechas en LaTeX ($\rightarrow$); se muestran como símbolos. */
+const unLatex = (t: string) =>
+  t
+    .replace(/\$\s*\\(?:rightarrow|to)\s*\$/g, "→")
+    .replace(/\$\s*\\leftarrow\s*\$/g, "←")
+    .replace(/\$\s*\\Rightarrow\s*\$/g, "⇒");
+
+/** Convierte **negritas** y *cursivas* en <strong> y <em> sin usar HTML crudo. */
 function inline(text: string): ReactNode[] {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((p, i) =>
-    p.startsWith("**") && p.endsWith("**") ? <strong key={i}>{p.slice(2, -2)}</strong> : p,
-  );
+  return unLatex(text)
+    .split(/(\*\*[^*]+\*\*|\*[^*\s][^*]*\*)/g)
+    .map((p, i) =>
+      p.startsWith("**") && p.endsWith("**") ? (
+        <strong key={i}>{p.slice(2, -2)}</strong>
+      ) : p.length > 2 && p.startsWith("*") && p.endsWith("*") ? (
+        <em key={i}>{p.slice(1, -1)}</em>
+      ) : (
+        p
+      ),
+    );
 }
+
+const BULLET = /^\s*(?:[-*•])\s+/;
 
 /** La retroalimentación llega en texto con secciones numeradas; se muestra como párrafos y títulos. */
 export function FeedbackText({ text }: { text: string }) {
@@ -28,6 +45,15 @@ export function FeedbackText({ text }: { text: string }) {
         const first = lines[0] ?? "";
         const isHeading = lines.length === 1 && /^(\d+\.\s+)?\*\*[^*]+\*\*:?$/.test(first);
         if (isHeading) return <h3 key={i}>{inline(first.replace(/^\d+\.\s+/, ""))}</h3>;
+        if (lines.every((l) => BULLET.test(l))) {
+          return (
+            <ul key={i}>
+              {lines.map((l, j) => (
+                <li key={j}>{inline(l.replace(BULLET, ""))}</li>
+              ))}
+            </ul>
+          );
+        }
         return (
           <p key={i}>
             {lines.map((l, j) => (

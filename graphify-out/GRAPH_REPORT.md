@@ -1,17 +1,17 @@
 # Graph Report - interview-coach  (2026-11-04)
 
 ## Corpus Check
-- 77 files · ~24,356 words
+- 77 files · ~24,491 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 4 file(s) not represented in the graph (top: (none) 2, .webmanifest 1, .css 1)
 
 ## Summary
-- 562 nodes · 998 edges · 32 communities (22 shown, 10 thin omitted)
+- 563 nodes · 1000 edges · 33 communities (23 shown, 10 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 37 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c9d1dfbf`
+- Built from commit: `9f8bc00d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,7 +19,7 @@
 - CoachApp.tsx
 - core/src/index.ts
 - desktop/package.json
-- prompts.ts
+- usePractice.ts
 - bench.mjs
 - main/index.ts
 - scripts
@@ -46,6 +46,7 @@
 - Project instructions: claude-mem work state and graphify
 - dependencies
 - setupUpdates
+- core/package.json
 
 ## God Nodes (most connected - your core abstractions)
 1. `CoachServices` - 25 edges
@@ -79,31 +80,31 @@
 - **GitHub Actions delivery pipelines** — github_workflows_ci_ci_workflow, github_workflows_pages_pages_workflow, github_workflows_release_desktop_release_workflow [INFERRED 0.85]
 - **Visual identity system** — design_interview_coach_design_system, design_brass_accent_palette, design_question_plate_ficha, apps_web_public_icon_app_icon, apps_desktop_impeccable_surfaces_apps_desktop_src_renderer_direction_contract [INFERRED 0.85]
 
-## Communities (32 total, 10 thin omitted)
+## Communities (33 total, 10 thin omitted)
 
 ### Community 0 - "CoachApp.tsx"
 Cohesion: 0.07
 Nodes (27): EnglishLevel, AudioSourceKind, CoachApp(), FocusPanel(), LivePanel(), Nav(), pad(), Privacy() (+19 more)
 
 ### Community 1 - "core/src/index.ts"
-Cohesion: 0.05
-Nodes (28): dependencies, @google/genai, main, name, private, scripts, test, typecheck (+20 more)
+Cohesion: 0.07
+Nodes (19): DEFAULT_MODEL, GeminiOptions, GeminiTranslator, GenAiLike, generateContentStream(), EMPTY_PROFILE, MAX_SUMMARY, PROFILE_FIELDS (+11 more)
 
 ### Community 2 - "desktop/package.json"
 Cohesion: 0.10
 Nodes (19): author, description, @fontsource-variable/public-sans, @interview-coach/core, @interview-coach/ui, react, react-dom, @types/react (+11 more)
 
-### Community 3 - "prompts.ts"
-Cohesion: 0.12
-Nodes (19): GenAiLike, EMPTY_PROFILE, MAX_SUMMARY, PROFILE_FIELDS, profileToPromptText(), SECTION_TITLES, answerFeedbackPrompt(), contextQuestionsPrompt() (+11 more)
+### Community 3 - "usePractice.ts"
+Cohesion: 0.07
+Nodes (27): ApiError, ApiErrorKind, MESSAGES, statusOf(), toApiError(), answerFeedbackPrompt(), contextQuestionsPrompt(), feedbackPrompt() (+19 more)
 
 ### Community 4 - "bench.mjs"
 Cohesion: 0.20
 Nodes (6): here, model, pcm, require, { transcribe }, @kutalia/whisper-node-addon
 
 ### Community 5 - "main/index.ts"
-Cohesion: 0.07
-Nodes (40): DLLS, fs, path, dir, file, { app, BrowserWindow, desktopCapturer, session, ipcMain }, path, { contextBridge, ipcRenderer } (+32 more)
+Cohesion: 0.08
+Nodes (38): DLLS, fs, path, dir, file, { app, BrowserWindow, desktopCapturer, session, ipcMain }, path, { contextBridge, ipcRenderer } (+30 more)
 
 ### Community 6 - "scripts"
 Cohesion: 0.18
@@ -126,8 +127,8 @@ Cohesion: 0.08
 Nodes (23): dependencies, @fontsource-variable/public-sans, @interview-coach/core, lucide-react, react, react-dom, devDependencies, @types/react (+15 more)
 
 ### Community 11 - "types.ts"
-Cohesion: 0.07
-Nodes (30): isWorthSaving(), KIND_FILE, KIND_TITLE, pad(), parts(), SessionRecord, sessionTitle(), sessionToMarkdown() (+22 more)
+Cohesion: 0.12
+Nodes (22): isWorthSaving(), KIND_FILE, KIND_TITLE, pad(), parts(), SessionRecord, sessionTitle(), sessionToMarkdown() (+14 more)
 
 ### Community 12 - "devDependencies"
 Cohesion: 0.13
@@ -169,6 +170,10 @@ Nodes (3): extends, include, ../../tsconfig.base.json
 Cohesion: 0.67
 Nodes (3): dependencies, electron-updater, @kutalia/whisper-node-addon
 
+### Community 32 - "core/package.json"
+Cohesion: 0.15
+Nodes (12): dependencies, @google/genai, main, name, private, scripts, test, typecheck (+4 more)
+
 ## Knowledge Gaps
 - **47 isolated node(s):** `@fontsource-variable/public-sans`, `@interview-coach/core`, `@interview-coach/ui`, `@types/node`, `@types/react` (+42 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 284 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
@@ -190,4 +195,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 8 inferred relationships involving `useCoach()` (e.g. with `.load()` and `.onModelStatus()`) actually correct?**
   _`useCoach()` has 8 INFERRED edges - model-reasoned connections that need verification._
 - **Should `core/src/index.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.054078014184397165 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06829268292682927 - nodes in this community are weakly interconnected._
