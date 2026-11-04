@@ -552,6 +552,22 @@ input[type="range"] {
   border-radius: 50%;
   background: var(--brass);
 }
+.tabs--inline {
+  margin-right: 0;
+  border-bottom: 1px solid var(--seam);
+}
+.tabs--inline .tab[aria-checked="true"] {
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom-color: var(--brass);
+}
+.sim .answer__text + .feedback {
+  margin-top: 1.25rem;
+}
+.sim .textarea {
+  width: 100%;
+  resize: vertical;
+}
 .nav__update {
   display: flex;
   align-items: center;

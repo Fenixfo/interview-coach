@@ -16,7 +16,8 @@ Aplicación para practicar entrevistas de trabajo en inglés. Escucha al entrevi
 
 - **En vivo:** escucha el audio del sistema (o el micrófono) y muestra pregunta, traducción y respuesta sugerida. Incluye ventana flotante siempre visible.
 - **Simulación:** escribes un cargo y Gemini genera preguntas, las lee en voz alta y escucha tu respuesta por el micrófono. Al final recibes retroalimentación en español sobre gramática, vocabulario y claridad. Necesita tu clave de Gemini.
-- **Historial:** cada sesión en vivo o simulación se guarda en tu equipo (hasta 200). Puedes verla, eliminarla o exportarla a Markdown.
+- **Práctica:** pegas el contexto de una entrevista (cargo, empresa, etapa, tecnologías) y Gemini genera las preguntas, o pegas tus propias preguntas (una por línea). Respondes cada una escribiendo o dictando; Gemini analiza la pregunta y tu respuesta y te da retroalimentación en español: contenido, gramática, una versión mejorada y una puntuación. Necesita tu clave de Gemini.
+- **Historial:** cada sesión en vivo, simulación o práctica se guarda en tu equipo (hasta 200). Puedes verla, eliminarla o exportarla a Markdown.
 
 ## Actualizaciones automáticas
 
@@ -64,7 +65,7 @@ packages/core   lógica sin dependencias de plataforma (TypeScript): proveedores
                 de preguntas, segmentación de turnos, transcripción en vivo, prompts y cliente de Gemini
 packages/ui     interfaz React compartida (pantalla principal, ajustes)
 apps/desktop    Electron (Windows primero)
-apps/web        (pendiente) Vite + PWA en GitHub Pages
+apps/web        Vite + PWA en GitHub Pages
 apps/mobile     (pendiente) Capacitor, Android primero
 ```
 
@@ -79,7 +80,7 @@ apps/mobile     (pendiente) Capacitor, Android primero
 | 0 | Investigación y plan | Hecha |
 | 1 | Escritorio Windows (MVP): audio del sistema, Whisper local, traducción, Gemini, pantalla, instalador | Hecha (PR abierto) |
 | 2 | Modo simulación con voz, historial exportable, actualizaciones automáticas | En revisión |
-| 3 | Web (PWA en GitHub Pages) | Pendiente |
+| 3 | Web (PWA en GitHub Pages) | Hecha; modo Práctica añadido |
 | 4 | Celular (Capacitor, Android primero) | Pendiente |
 
 ## Limitaciones conocidas

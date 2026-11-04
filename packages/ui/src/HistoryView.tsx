@@ -31,7 +31,7 @@ export function HistoryView({ services }: { services: CoachServices }) {
       <main className="history">
         <div className="empty">
           <p>
-            Aún no hay sesiones guardadas. Cada práctica en vivo o simulación con al menos una pregunta se
+            Aún no hay sesiones guardadas. Cada sesión en vivo, simulación o práctica con al menos una pregunta se
             guarda aquí, solo en este equipo.
           </p>
         </div>
@@ -112,8 +112,9 @@ export function HistoryView({ services }: { services: CoachServices }) {
                   <span lang="en">{t.question}</span>
                 </h3>
                 {t.translation && <p className="history__es">{t.translation}</p>}
-                <p className="history__label">{open.kind === "simulation" ? "Tu respuesta" : "Respuesta sugerida"}</p>
+                <p className="history__label">{open.kind === "live" ? "Respuesta sugerida" : "Tu respuesta"}</p>
                 <p lang="en">{t.answer || "(sin respuesta)"}</p>
+                {t.feedback && <FeedbackText text={t.feedback} />}
               </section>
             ))}
             {open.feedback && (

@@ -85,3 +85,44 @@ export function parseQuestionList(raw: string): string[] {
     return [];
   }
 }
+
+/** Preguntas para practicar a partir del contexto de una entrevista (oferta, empresa, etapa, notas). */
+export function contextQuestionsPrompt(context: string, count: number): string {
+  return [
+    `Write ${count} realistic job interview questions in English that this candidate could be asked.`,
+    "Base them on the interview context below: role, company, stage, tech stack and any notes.",
+    "Mix behavioral and role-specific questions, from easier to harder. Do not repeat topics.",
+    "Return only a JSON array of strings, with no extra text.",
+    "",
+    "INTERVIEW CONTEXT",
+    context.trim(),
+  ].join("\n");
+}
+
+/** Separa las preguntas que el usuario pegó: una por línea, sin viñetas, números ni "Q:". */
+export function parsePastedQuestions(raw: string): string[] {
+  return raw
+    .split(/\r?\n/)
+    .map((l) => l.replace(/^\s*(?:[-*•]|\d+[.)]|Q\d*[:.)])\s*/i, "").trim())
+    .filter((l) => l.length > 0);
+}
+
+/** Evalúa UNA respuesta: mira la pregunta, la respuesta y, si existe, el contexto de la entrevista. */
+export function answerFeedbackPrompt(question: string, answer: string, context = ""): string {
+  return [
+    "A Spanish-speaking candidate is practicing for a job interview in English.",
+    "Evaluate the answer to the question below. The answer may be typed or a speech transcript,",
+    "so ignore punctuation and capitalization.",
+    "Write the feedback IN SPANISH, quoting short English examples where useful. Be concrete and brief.",
+    "Structure, each part starting with its bold label:",
+    "**Qué busca la pregunta:** una frase sobre lo que quiere saber el entrevistador.",
+    "**Contenido:** ¿contesta la pregunta? ¿Qué falta o sobra? En preguntas de comportamiento revisa el método STAR.",
+    "**Gramática y vocabulario:** errores concretos con su corrección y alternativas más naturales.",
+    "**Respuesta mejorada:** versión de 60 a 120 palabras en inglés, en primera persona, que conserve los hechos del candidato y no invente datos.",
+    "**Puntuación:** de 1 a 5, con una frase que la justifique.",
+    ...(context.trim() ? ["", "INTERVIEW CONTEXT", context.trim()] : []),
+    "",
+    `QUESTION: ${question.trim()}`,
+    `ANSWER: ${answer.trim() || "(no answer)"}`,
+  ].join("\n");
+}

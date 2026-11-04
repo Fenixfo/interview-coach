@@ -16,11 +16,12 @@ import type { AudioSourceKind } from "@interview-coach/core";
 import { useCoach, type Coach, type Status, type Turn } from "./useCoach";
 import { SettingsView } from "./SettingsView";
 import { SimulationView } from "./SimulationView";
+import { PracticeView } from "./PracticeView";
 import { HistoryView } from "./HistoryView";
 import { lengthTier } from "./lengthTier";
 import type { CoachServices, UpdateInfo } from "./types";
 
-type View = "coach" | "sim" | "history" | "settings";
+type View = "coach" | "sim" | "practice" | "history" | "settings";
 
 const SOURCE_LABEL: Record<AudioSourceKind, string> = {
   system: "Audio del sistema",
@@ -115,6 +116,15 @@ export function CoachApp({ services }: { services: CoachServices }) {
               onSettings={toSettings}
             />
           )}
+          {view === "practice" && (
+            <PracticeView
+              services={services}
+              settings={coach.settings}
+              hasKey={coach.hasKey}
+              blocked={coach.running}
+              onSettings={toSettings}
+            />
+          )}
           {view === "history" && <HistoryView services={services} />}
         </>
       )}
@@ -133,6 +143,7 @@ function Nav(props: {
   const tabs: Array<[View, string]> = [
     ["coach", "En vivo"],
     ["sim", "Simulación"],
+    ["practice", "Práctica"],
     ["history", "Historial"],
   ];
   return (

@@ -3,17 +3,21 @@ export interface SessionTurn {
   question: string;
   /** Traducción al español de la pregunta (sesión en vivo). */
   translation?: string;
-  /** En vivo: respuesta sugerida. En simulación: lo que dijo el usuario. */
+  /** En vivo: respuesta sugerida. En simulación y práctica: lo que respondió el usuario. */
   answer: string;
+  /** Retroalimentación de esta respuesta (práctica). */
+  feedback?: string;
 }
 
 export interface SessionRecord {
   id: string;
-  kind: "live" | "simulation";
+  kind: "live" | "simulation" | "practice";
   /** ISO 8601. */
   startedAt: string;
-  /** Cargo practicado (simulación). */
+  /** Cargo practicado (simulación) o título de la práctica. */
   role?: string;
+  /** Contexto de la entrevista con el que se generaron las preguntas (práctica). */
+  context?: string;
   turns: SessionTurn[];
   /** Retroalimentación en español (simulación). */
   feedback?: string;
@@ -36,15 +40,25 @@ function parts(iso: string, timeZone?: string) {
   return { date: `${get("year")}-${get("month")}-${get("day")}`, time: `${get("hour")}:${get("minute")}` };
 }
 
+const KIND_TITLE: Record<SessionRecord["kind"], string> = {
+  live: "Sesión en vivo",
+  simulation: "Simulación",
+  practice: "Práctica",
+};
+const KIND_FILE: Record<SessionRecord["kind"], string> = {
+  live: "en-vivo",
+  simulation: "simulacion",
+  practice: "practica",
+};
+
 export function sessionTitle(rec: SessionRecord, timeZone?: string): string {
   const { date, time } = parts(rec.startedAt, timeZone);
-  const kind = rec.kind === "simulation" ? "Simulación" : "Sesión en vivo";
-  return `${kind}, ${date} ${time}`;
+  return `${KIND_TITLE[rec.kind]}, ${date} ${time}`;
 }
 
 export function suggestedFilename(rec: SessionRecord, timeZone?: string): string {
   const { date } = parts(rec.startedAt, timeZone);
-  return `entrevista-${rec.kind === "simulation" ? "simulacion" : "en-vivo"}-${date}.md`;
+  return `entrevista-${KIND_FILE[rec.kind]}-${date}.md`;
 }
 
 export function sessionToMarkdown(rec: SessionRecord, timeZone?: string): string {
@@ -53,8 +67,9 @@ export function sessionToMarkdown(rec: SessionRecord, timeZone?: string): string
   rec.turns.forEach((t, i) => {
     out.push(`## P-${pad(i + 1)}`, "", `**Pregunta:** ${t.question.trim()}`, "");
     if (t.translation?.trim()) out.push(`**Traducción:** ${t.translation.trim()}`, "");
-    const label = rec.kind === "simulation" ? "Tu respuesta" : "Respuesta sugerida";
+    const label = rec.kind === "live" ? "Respuesta sugerida" : "Tu respuesta";
     out.push(`**${label}:**`, "", t.answer.trim() ? t.answer.trim() : "_(sin respuesta)_", "");
+    if (t.feedback?.trim()) out.push("**Retroalimentación:**", "", t.feedback.trim(), "");
   });
   if (rec.feedback?.trim()) out.push("## Retroalimentación", "", rec.feedback.trim(), "");
   return out.join("\n").replace(/\n{3,}/g, "\n\n");
